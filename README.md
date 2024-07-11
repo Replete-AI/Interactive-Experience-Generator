@@ -83,7 +83,7 @@ This was pretty easy to figure out, as well. In line 153 of synthetic_data.py, i
 
 ## Pricing
 
-I mainly use Together.ai to generate data. So, it cost me about a hundred and fifty dollars to use this pipeline in my project. This includes all the testing and the creation of each experience.yaml file. With "NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT", it costs about sixty cents per 1 million tokens. This counts for all the tokens processed as well as the tokens generated. So to generate 100 megabytes of data using this script would cost me about 70 bucks. You could lower the price a bit by removing the reformatting step of validation, and changing it to just not use any data that fails the validation step...but then you might end up needing to generate more just to make up for the failed generations.
+I mainly use Together.ai to generate data. So, it cost me about three hundred dollars to use this pipeline in my project. This includes all the testing and the creation of each experience.yaml file. With "NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT", it costs about sixty cents per 1 million tokens. This counts for all the tokens processed as well as the tokens generated. So to generate 100 megabytes of data using this script would cost me about 70 bucks. You could lower the price a bit by removing the reformatting step of validation, and changing it to just not use any data that fails the validation step...but then you might end up needing to generate more just to make up for the failed generations.
 
 *Ain't nobody got time for that.*
 
