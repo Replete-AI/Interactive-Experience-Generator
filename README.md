@@ -5,6 +5,8 @@
 ## ~ modified to generate data with Nemotron through the Nvidia API! (it's free!)
 
 ### <span style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 6em;"><b>This is a complex data pipeline which was inspired by the work of [Evan Armstrong](https://github.com/e-p-armstrong), the creator of [augmentoolkit](https://github.com/e-p-armstrong/augmentoolkit). </b></span>
+
+I ended up using this pipeline to create the [Nemotron Study Guide](https://huggingface.co/Replete-AI/Pneuma), which is a dataset that is made to help smaller models increase their performance on MMLU and ARC Challenge benchmarks.
 </div>
 
 ## Install the Repository and its Requirements
