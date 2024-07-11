@@ -21,11 +21,11 @@ pip install -r requirements.txt
 
 To get started, you have a config.yaml file, where you paste in your API key, the API's base URL, and also the model you'd like to use with the corresponding API. Then, below all of that is the prompt material that is sent to the API before your actual system prompt. To achieve your desired goal with your synthetic data, it's good to make sure that what you write here is applicable to any and all scenarios you will be generating.
 
-Now, once you have your config.yaml set up properly, you should head over to synthetic_data.py and scroll down to line 78, where the prompt is injected. You can adjust this slightly to your use case. For me, I need regularization data...some of these huggingface datasets are really bad. I had to replace like 10% of the rows, and Nemotron dropped last week so I figured I'd use that. I have my system prompt and my config set up to generate CoT data. Designing the system prompt in synthetic_data.py and the prompts in the config.yaml take a lot of testing, and depend on the kinds of experience archetypes you want to create.
+Now, once you have your config.yaml set up properly, you should head over to synthetic_data.py and scroll down to line 83, where the prompt is injected. You can adjust this slightly to your use case. For me, I need regularization data...some of these huggingface datasets are really bad. I had to replace like 10% of the rows, and Nemotron dropped a week before I started writing this, so I figured I'd use that. I have my system prompt and my config set up to generate CoT data. Designing the system prompt in synthetic_data.py and the prompts in the config.yaml take a lot of testing, and depend on the kinds of experience archetypes you want to create.
 
 Speaking of experience archetypes, these can be found in the experiences folder as .yaml files. Each one represents a different type, topic, or genre of interaction. These are pulled and injected into the prompt in order to allow you to generate interactions based off of those experiences. To test how the model handles the config, system prompt, and individual experience archetypes, I created 5 very separate and unique experience .yaml files. I made sure to make these experience files incredibly different from each other, incorporating different concepts or ways for the AI character and the human to interact together.
 
-Then, I open a terminal in VSC, or any other IDE to be honest, and I type `python synthetic_data.py` to run the script. It injects the prompts in the config, then wraps the system prompt around the experience data. It then, using the prompts, tries to generate an experience that is similar to the data it was given, along with using the generation parameters I had set in line 69 (aye lmao) of synthetic_data.py
+Then, I open a terminal in VSC, or any other IDE to be honest, and I type `python synthetic_data.py` to run the script. It injects the prompts in the config, then wraps the system prompt around the experience data. It then, using the prompts, tries to generate an experience that is similar to the data it was given, along with using the generation parameters I had set in line 96 of synthetic_data.py
 
 After some testing and tweaking of the config, system prompt, and experiences, I had 5 incredibly different and high quality interactions generated that matched my desired outcome. This basically tells me that everything is set for me to start making as many experience files as I need. In this case, I needed thousands of them. I then created a "finished experiences" folder for me to stick my completed archetypes into so that I had a way to isolate the ones that I had already tested from being used by the script.
 
@@ -73,13 +73,13 @@ Repeating fields will make the data untrainable, so I had it detect to see if it
 
 Fixing this was pretty easy, my first suggestion is to use a model like "NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT". Then, you want to set your config and your system prompt up so that it's less likely to do things like this. Now, once I did this, every 1 in 40 generations had some kind of GPT-slop since most models are trained on GPT data. I wrote a part of the script that will check for this and then skip that data point if it catches the GPT character saying some kind of GPT slop.
 
-This is likely the one that you'll want to edit to match your use case, afterall, if you're training an assistant you don't need to worry about slop. You need to worry about NSFW stuff. You can alter the excluded phrases in line 152 of synthetic_data.py
+This is likely the one that you'll want to edit to match your use case, afterall, if you're training an assistant you don't need to worry about slop. You need to worry about NSFW stuff. You can alter the excluded phrases in line 164 of synthetic_data.py
 
 Make sure to use JSON format if you decide to alter this. So, the excluded words or phrases are contained in quotes, on their own line, and every line except the very last one in the list has a comma at the end.
 
 ### 4. Ends with a value from the human character
 
-This was pretty easy to figure out, as well. In line 153 of synthetic_data.py, it checks to see if the last entry in the line is from the human, then removes it if that's the case.
+This was pretty easy to figure out, as well. In line 160 of synthetic_data.py, it checks to see if the last entry in the line is from the human, then removes it if that's the case.
 
 
 
