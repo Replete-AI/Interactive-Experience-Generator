@@ -2,7 +2,7 @@
 
 # <span style="color: #555;"># Generate Your Own Interactive Experience Data!</span>
 
-## - perfect for any occasion!
+## ~ perfect for any occasion!
 
 ### <span style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 6em;"><b>This is a complex data pipeline which was inspired by the work of [Evan Armstrong](https://github.com/e-p-armstrong), the creator of [augmentoolkit](https://github.com/e-p-armstrong/augmentoolkit). </b></span>
 
