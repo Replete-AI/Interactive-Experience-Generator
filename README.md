@@ -1,6 +1,6 @@
 <div align="center">
 
-# <span style="color: #555;"># Generate Your Own Interactive Experience Data!</span>
+# <span style="color: #555;">Generate Your Own Interactive Experience Data!</span>
 
 ## ~ perfect for any occasion!
 
