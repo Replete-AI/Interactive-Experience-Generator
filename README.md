@@ -9,7 +9,7 @@
 ## Install the Repository and its Requirements
 
 ``` 
-git clone (put the link here stupid stanley)
+git clone https://github.com/Kquant03/Interactive-Experience-Generator/tree/nvidia
 cd 
 pip install -r requirements.txt
 ```
