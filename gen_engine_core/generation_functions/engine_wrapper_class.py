@@ -1,6 +1,7 @@
 import asyncio
 import uuid
-from openai import AsyncOpenAI
+import time
+from openai import AsyncOpenAI, RateLimitError
 import cohere
 from together import AsyncTogether
 
@@ -15,6 +16,7 @@ try:
 except:
     print("Aphrodite not installed; stick to Llama CPP or API modes")
 
+TOKEN_LIMIT_PER_MINUTE = 5000
 
 def make_id():
     return str(uuid.uuid4())
@@ -126,24 +128,47 @@ class EngineWrapper:
         elif self.mode == "api" or self.mode == "together":
             completion = ""
             timed_out = False
-            stream = await self.client.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                temperature=sampling_params["temperature"],
-                top_p=sampling_params["top_p"],
-                stop=sampling_params["stop"],
-                max_tokens=sampling_params["max_tokens"],
-                stream=True,
-            )
-            async for chunk in stream:
-                try:
-                    completion = completion + chunk.choices[0].delta.content
-                    # print(completion)
-                except:
-                    print("THIS RESPONSE TIMED OUT PARTWAY THROUGH GENERATION!")
-                    timed_out = True  # catch timeout exception if it happens, at least this way we get whatever output has generated so far.
 
-            # completion = completion.choices[0].message.content
+            try:
+                start_time = time.time()
+                stream = await self.client.chat.completions.create(
+                    model=self.model,
+                    messages=messages,
+                    temperature=sampling_params["temperature"],
+                    top_p=sampling_params["top_p"],
+                    stop=sampling_params["stop"],
+                    max_tokens=sampling_params["max_tokens"],
+                    stream=True,
+                )
+                async for chunk in stream:
+                    try:
+                        completion = completion + chunk.choices[0].delta.content
+                        elapsed_time = time.time() - start_time
+                        if elapsed_time >= 90:
+                            print("Generation timed out after 90 seconds.")
+                            timed_out = True
+                            break
+                    except:
+                        print("THIS RESPONSE TIMED OUT PARTWAY THROUGH GENERATION!")
+                        timed_out = True
+                        break
+            except RateLimitError as e:
+                error_message = str(e)
+                used_tokens = int(error_message.split("Used ")[1].split(",")[0])
+                requested_tokens = int(error_message.split("Requested ")[1].split(".")[0])
+                retry_after = float(error_message.split("Please try again in ")[1].split("s.")[0])
+
+                remaining_tokens = TOKEN_LIMIT_PER_MINUTE - used_tokens
+                if remaining_tokens >= requested_tokens:
+                    # If there are enough remaining tokens, wait for the specified retry time
+                    print(f"Rate limit exceeded. Retrying after {retry_after} seconds...")
+                    await asyncio.sleep(retry_after)
+                else:
+                    # If there are not enough remaining tokens, wait until the next minute
+                    delay = 60 - (time.time() % 60)
+                    print(f"Token limit reached. Waiting for {delay:.2f} seconds...")
+                    await asyncio.sleep(delay)
+
             return completion, timed_out
         elif self.mode == "cohere":
             timed_out = False

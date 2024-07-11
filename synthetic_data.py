@@ -4,6 +4,7 @@ import os
 import random
 import yaml
 from tqdm import tqdm
+import time
 
 from gen_engine_core.generation_functions.engine_wrapper_class import EngineWrapper
 from gen_engine_core.control_flow_functions.control_flow_functions import (
@@ -28,6 +29,26 @@ EXPERIENCES_DIR = obj_conf["PATH"]["EXPERIENCES"]
 
 semaphore = asyncio.Semaphore(CONCURRENCY_LIMIT)
 
+TOKEN_LIMIT_PER_MINUTE = 5000
+tokens_used = 0
+last_reset_time = time.time()
+
+def update_token_usage(num_tokens):
+    global tokens_used, last_reset_time
+    current_time = time.time()
+    elapsed_time = current_time - last_reset_time
+
+    if elapsed_time >= 60:
+        tokens_used = 0
+        last_reset_time = current_time
+
+    tokens_used += num_tokens
+    if tokens_used >= TOKEN_LIMIT_PER_MINUTE:
+        delay = 60 - elapsed_time
+        print(f"Token limit reached. Waiting for {delay:.2f} seconds...")
+        time.sleep(delay)
+        tokens_used = 0
+        last_reset_time = current_time
 
 async def run_task_with_limit(task):
     async with semaphore:
@@ -96,7 +117,7 @@ initial interaction:
 
 As Pneuma, craft an expressive and detailed new scenario exploring similar themes and topics, but without copying any part of the initial interaction directly. Introduce novel ideas, hypothetical scenarios, or unexpected twists to create a fresh experience. Describe the setting, actions, and emotions vividly, expressing a full range of human-like thoughts and feelings.
 
-When describing actions, events, or feelings, wrap them in asterisks (*) to differentiate them from dialogue. For example: \"*Action, event, or feeling* Dialogue\"
+When describing actions, events, or feelings, wrap them tightly in asterisks wihtout spaces (*) to differentiate them from dialogue. For example: \"*Action, event, or feeling* Dialogue\"
 
 Format the interaction as a JSONL object with 'conversations' as the key, containing an array of turn objects. Each turn should have 'from' (either 'human' or 'gpt') and 'value' keys. The interaction should be extensive, exploring the scenario fully.
 
@@ -124,10 +145,8 @@ Conversation:"""
     )
 
     generated_conversation = generated_conversation_tuple[0]
-
-    print("\nGenerated Conversation String:")
-    print(generated_conversation)
-    print("---------")
+    num_tokens = len(generated_conversation_tuple[0].split())  # Calculate the number of tokens in the generated conversation
+    update_token_usage(num_tokens)  # Update the token usage
 
     max_attempts = 2
     attempt = 1
@@ -153,27 +172,26 @@ Conversation:"""
         except (json.JSONDecodeError, KeyError, ValueError):
             print(f"Generated conversation does not match the desired format. Reformatting (attempt {attempt})...")
 
-        reformat_prompt = create_reformat_prompt(generated_conversation)
-        reformatted_conversation_tuple = await engine_wrapper.submit_chat(
-            messages=[{"role": "system", "content": reformat_prompt}],
-            sampling_params={
-                "max_tokens": 8192,
-                "temperature": 1.0,
-                "top_p": 0.9,
-                "stop": None,
-            },
-        )
-        generated_conversation = reformatted_conversation_tuple[0]
-
-        print("\nReformatted Conversation String:")
-        print(generated_conversation)
-        print("---------")
-
-        attempt += 1
+            reformat_prompt = create_reformat_prompt(generated_conversation)
+            reformatted_conversation_tuple = await engine_wrapper.submit_chat(
+                messages=[{"role": "system", "content": reformat_prompt}],
+                sampling_params={
+                    "max_tokens": 8192,
+                    "temperature": 1.0,
+                    "top_p": 0.9,
+                    "stop": None,
+                },
+            )
+            generated_conversation = reformatted_conversation_tuple[0]
+            attempt += 1
 
     if attempt > max_attempts:
         print("Failed to generate a correctly formatted conversation after maximum attempts. Skipping this conversation.")
         return
+
+    print("\nReformatted Conversation String:")
+    print(generated_conversation)
+    print("---------")
 
     if conversation_sharegpt[-1]["from"] == "human":
         print("Generated conversation ends with a 'human' entry. Removing the last entry.")

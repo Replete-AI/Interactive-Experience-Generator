@@ -1,12 +1,12 @@
 <div align="center">
 
-# <span style="color: #555;"># Generate Your Own Interactive Experience Data!</span>
+# <span style="color: #555;">Generate Your Own Interactive Experience Data!</span>
 
 ## - perfect for any occasion!
 
-### <span style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 6em;"><b>This is a complex data pipeline which was inspired by the work of Evan Armstrong, the creator of [augmentoolkit](https://github.com/e-p-armstrong/augmentoolkit). </b></span>
+### <span style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 6em;"><b>This is a complex data pipeline which was inspired by the work of [Evan Armstrong](https://github.com/e-p-armstrong), the creator of [augmentoolkit](https://github.com/e-p-armstrong/augmentoolkit). </b></span>
 
-I ended up using this pipeline to create [Pneuma](https://huggingface.co/Replete-AI/Pneuma), which is a series of models that have been trained on data representing experiences and interactions. With this pipeline, I was able to give an LLM a name, a personality, and the ability to generate realistic humanlike interactions.
+I ended up using this pipeline to create [Pneuma](https://huggingface.co/Replete-AI/Pneuma), which is a series of models that have been trained on data representing experiences and interactions from the perspective of an AI character. With this pipeline, I was able to give an LLM a name, a personality, and the ability to generate realistic humanlike interactions. The difference between this one and 
 </div>
 
 ## Install the Repository and its Requirements
@@ -21,13 +21,13 @@ pip install -r requirements.txt
 
 To get started, you have a config.yaml file, where you paste in your API key, the API's base URL, and also the model you'd like to use with the corresponding API. Then, below all of that is the prompt material that is sent to the API before your actual system prompt. To achieve your desired goal with your synthetic data, it's good to make sure that what you write here is applicable to any and all scenarios you will be generating.
 
-Now, once you have your config.yaml set up properly, you should head over to synthetic_data.py and scroll down to line 78, where the prompt is injected. You can adjust this slightly to your use case. For me, I'm designing Pneuma while I write this, so the system prompt I use revolves around Pneuma and her character. Designing the system prompt in synthetic_data.py and the prompts in the config.yaml take a lot of testing, and depend on the kinds of experience archetypes you want to create.
+Now, once you have your config.yaml set up properly, you should head over to synthetic_data.py and scroll down to line 111, where the prompt is injected. You can adjust this slightly to your use case. For me, I'm designing Pneuma while I write this, so the system prompt I use revolves around Pneuma and her character. Designing the system prompt in synthetic_data.py and the prompts in the config.yaml take a lot of testing, and depend on the kinds of experience archetypes you want to create.
 
 Speaking of experience archetypes, these can be found in the experiences folder as .yaml files. Each one represents a different type, topic, or genre of interaction. These are pulled and injected into the prompt in order to allow you to generate interactions based off of those experiences. To test how the model handles the config, system prompt, and individual experience archetypes, I created 5 very separate and unique experience .yaml files. I made sure to make these experience files incredibly different from each other, incorporating different concepts or ways for the AI character and the human to interact together.
 
-Then, I open a terminal in VSC, or any other IDE to be honest, and I type `python synthetic_data.py` to run the script. It injects the prompts in the config, then wraps the system prompt around the experience data. It then, using the prompts, tries to generate an experience that is similar to the data it was given, along with using the generation parameters I had set in line 83 of synthetic_data.py
+Then, I open a terminal in VSC, or any other IDE to be honest, and I type `python synthetic_data.py` to run the script. It injects the prompts in the config, then wraps the system prompt around the experience data. It then, using the prompts, tries to generate an experience that is similar to the data it was given, along with using the generation parameters I had set in line 137 of synthetic_data.py
 
-After some testing and tweaking of the config, system prompt, and experiences, I had 5 incredibly different and high quality interactions generated that matched my desired outcome. This basically tells me that everything is set for me to start making as many experience files as I need. In this case, I needed thousands of them. I then created a "finished experiences" folder for me to stick my completed archetypes into so that I had a way to isolate the ones that I had already tested from being used by the script.
+After some testing and tweaking of the config, system prompt, and experiences, I had 5 incredibly different and high quality interactions generated that matched my desired outcome. This basically tells me that everything is set up in order for me to start making as many experience files as I need. In this case, I needed thousands of them. I then created a "finished experiences" folder for me to stick my completed archetypes into so that I had a way to isolate the ones that I had already tested from the ones I hadn't.
 
 ## Creating More Experience Data
 
@@ -47,7 +47,7 @@ dialogue:
   - speaker: AI
     message: "Really? You really think that, human?"
 ```
-The name of the experience will have a small effect on the generation, as it is injected into the prompt. Think of it like how Claude names the interactions you have with it. It can be a single word, or a short phrase to quickly define exactly what follows. The description parameter is like a second system prompt that tells the model exactly what the following dialogue represents and what happens. The generations parameter actually defines how many of that type of experience you want to generate data points for. This makes it easier to do a little math and figure out what percentage of each type of interaction you want in your data. As for the dialogue, it follows the format seen above, where the speaker is the name of the character that is currently speaking or interacting. The message is a string which holds the statement or interaction of the above speaker. You can make as many of these as you want, but I suggest to test them on the model you intend to use before moving them into "finished experiences".
+The description parameter is like a second system prompt that tells the model exactly what the following dialogue represents and what happens. The generations parameter actually defines how many of that type of experience you want to generate data points for. This makes it easier to do a little math and figure out what percentage of each type of interaction you want in your data. As for the dialogue, it follows the format seen above, where the speaker is the name of the character that is currently speaking or interacting. The message is a string which holds the statement or interaction of the above speaker. You can make as many of these as you want, but I suggest to test them on the model you intend to use before moving them into "finished experiences".
 
 ## Validating the Data
 
@@ -81,13 +81,6 @@ Make sure to use JSON format if you decide to alter this. So, the excluded words
 
 This was pretty easy to figure out, as well. In line 153 of synthetic_data.py, it checks to see if the last entry in the line is from the human, then removes it if that's the case.
 
-## Pricing
-
-I mainly use Together.ai to generate data. So, it cost me about a hundred and fifty dollars to use this pipeline in my project. This includes all the testing and the creation of each experience.yaml file. With "NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT", it costs about sixty cents per 1 million tokens. This counts for all the tokens processed as well as the tokens generated. So to generate 100 megabytes of data using this script would cost me about 70 bucks. You could lower the price a bit by removing the reformatting step of validation, and changing it to just not use any data that fails the validation step...but then you might end up needing to generate more just to make up for the failed generations.
-
-*Ain't nobody got time for that.*
-
-Of course, once you have everything set up, this script is supposed to be compatible with multiple other backends, such as Aphrodite. So if you have a model figured out and you have all your experience files and your config and the system prompt you like, theoretically it might be cheaper to run the entire task through cloud compute rather than using Together's API service.
 
 
 

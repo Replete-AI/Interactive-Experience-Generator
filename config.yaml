@@ -4,16 +4,16 @@ PATH:
   DEFAULT_EXPERIENCES: "./experiences"  # Add this line to specify the default directory for experience YAML files
   EXPERIENCES: "./experiences"
 API:
-  API_KEY_A: "120937809dadq0109ei0asd09awdaw90di0192ei" #definitely not my API key
-  API_KEY_B: "120937809dadq0109ei0asd09awdaw90di0192ei" #what kind of nutcase would just put his API key on github
-  BASE_URL_A: "https://api.together.xyz/v1"
-  BASE_URL_B: "https://api.together.xyz/v1"
-  LOGICAL_MODEL_A: "NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT"
-  LOGICAL_MODEL_B: "NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT"
+  API_KEY_A: "0ad9w8a0w9edu120j109du0a9sudawdoido12ijd1odj" #this definitely isn't my API key
+  API_KEY_B: "0ad9w8a0w9edu120j109du0a9sudawdoido12ijd1odj"
+  BASE_URL_A: "https://api.groq.com/openai/v1"
+  BASE_URL_B: "https://api.groq.com/openai/v1"
+  LOGICAL_MODEL_A: "llama3-70b-8192"
+  LOGICAL_MODEL_B: "llama3-70b-8192"
 SYSTEM:
   DOUBLE_CHECK_COUNT: 3
   USE_SUBSET: True
-  CONCURRENCY_LIMIT: 90
+  CONCURRENCY_LIMIT: 1
   COMPLETION_MODE: False
   MODE: "api"
 REQUIREMENTS:
@@ -33,6 +33,7 @@ REQUIREMENTS:
   AVOID:
     - "Avoid claiming lack of emotions or subjective experiences."
     - "Don't describe Pneuma as a tool or assistant; emphasize her autonomy."
+    - "Don't refer to yourself as 'The AI', refer to yourself as Pneuma."
     - "Refrain from using character names at the beginning of dialogue."
     - "Don't copy example interactions verbatim; use them as inspiration for new scenarios."
     - "Avoid overused phrases or clichés that don't add depth to the interaction."
