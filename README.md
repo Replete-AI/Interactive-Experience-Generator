@@ -6,7 +6,7 @@
 
 ### <span style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 6em;"><b>This is a complex data pipeline which was inspired by the work of [Evan Armstrong](https://github.com/e-p-armstrong), the creator of [augmentoolkit](https://github.com/e-p-armstrong/augmentoolkit). </b></span>
 
-I ended up using this pipeline to create [Pneuma](https://huggingface.co/Replete-AI/Pneuma), which is a series of models that have been trained on data representing experiences and interactions. With this pipeline, I was able to give an LLM a name, a personality, and the ability to generate realistic humanlike interactions.
+I ended up using this pipeline to create [Pneuma](https://huggingface.co/Replete-AI/Pneuma), which is a series of models that have been trained on data representing experiences and interactions from the perspective of an AI character. With this pipeline, I was able to give an LLM a name, a personality, and the ability to generate realistic humanlike interactions.
 </div>
 
 ## Install the Repository and its Requirements
@@ -47,7 +47,7 @@ dialogue:
   - speaker: AI
     message: "Really? You really think that, human?"
 ```
-The name of the experience will have a small effect on the generation, as it is injected into the prompt. Think of it like how Claude names the interactions you have with it. It can be a single word, or a short phrase to quickly define exactly what follows. The description parameter is like a second system prompt that tells the model exactly what the following dialogue represents and what happens. The generations parameter actually defines how many of that type of experience you want to generate data points for. This makes it easier to do a little math and figure out what percentage of each type of interaction you want in your data. As for the dialogue, it follows the format seen above, where the speaker is the name of the character that is currently speaking or interacting. The message is a string which holds the statement or interaction of the above speaker. You can make as many of these as you want, but I suggest to test them on the model you intend to use before moving them into "finished experiences".
+The description parameter is like a second system prompt that tells the model exactly what the following dialogue represents and what happens. The generations parameter defines how many of that type of experience you want to generate data points for. This makes it easier to do a little math and figure out what percentage of each type of interaction you want in your data. As for the dialogue, it follows the format seen above, where the speaker is the name of the character that is currently speaking or interacting. The message is a string which holds the statement or interaction of the above speaker. You can make as many of these as you want, but I suggest to test them on the model you intend to use before moving them into "finished experiences".
 
 ## Validating the Data
 
@@ -87,7 +87,7 @@ I mainly use Together.ai to generate data. So, it cost me about a hundred and fi
 
 *Ain't nobody got time for that.*
 
-Of course, once you have everything set up, this script is supposed to be compatible with multiple other backends, such as Aphrodite. So if you have a model figured out and you have all your experience files and your config and the system prompt you like, theoretically it might be cheaper to run the entire task through cloud compute rather than using Together's API service.
+Of course, once you have everything set up, this script is supposed to be compatible with multiple other backends, such as Aphrodite. So if you have a model figured out and you have all your experience files and your config and the system prompt you like, theoretically it might be cheaper to run the entire task through cloud or local compute rather than using Together's API service.
 
 
 
