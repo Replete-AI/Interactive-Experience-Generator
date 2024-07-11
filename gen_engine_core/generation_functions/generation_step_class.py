@@ -20,7 +20,6 @@ class GenerationStep:
             "max_tokens": 3000,
             "stop": ["<|eot_id|>"],
         },
-        completion_mode=True,  # Chat vs completion mode
         retries=0,
         engine_wrapper=None,
         logging_level=logging.INFO,  # Default logging level
@@ -32,7 +31,6 @@ class GenerationStep:
         self.prompt_path = prompt_path
         self.regex = regex
         self.sampling_params = sampling_params
-        self.completion_mode = completion_mode
         self.retries = retries
         self.logging_level = logging_level
         self.output_processor = output_processor
@@ -64,84 +62,66 @@ class GenerationStep:
         with open(full_prompt_path, "r") as pf:
             prompt = pf.read()
 
-        # Submit generation and return response, retrying as needed
+        messages = yaml.safe_load(prompt)
+        input_messages = []
+        for message in messages:
+            try:
+                input_messages.append(
+                    {
+                        "role": message["role"],
+                        "content": safe_format(message["content"], **arguments),
+                    }
+                )
+            except Exception as e:
+                print("Error in formatting message:", message["content"])
+                input_messages.append(
+                    {"role": message["role"], "content": message["content"]}
+                )
+        messages = input_messages
+        
         times_tried = 0
-        if self.completion_mode:
-            prompt_formatted = safe_format(prompt, **arguments)
-            while times_tried <= self.retries:
-                try:
-                    response, timeout = await self.engine_wrapper.submit_completion(
-                        prompt_formatted, self.sampling_params
-                    )
-                    filtered_response = re.search(self.regex, response).group(1)
-                    ret = self.output_processor(filtered_response)
-                    if self.return_input_too:
-                        return ret, prompt_formatted + filtered_response
-                    return ret
-                except Exception as e:
-                    logging.error(f"Error in Generation Step: {e}")
-                    traceback.print_exc()
-                    times_tried += 1
-            raise Exception("Generation step failed -- too many retries!")
-        else:
-            messages = yaml.safe_load(prompt)
-            input_messages = []
-            for message in messages:
-                try:
-                    input_messages.append(
-                        {
-                            "role": message["role"],
-                            "content": safe_format(message["content"], **arguments),
-                        }
-                    )
-                except Exception as e:
-                    print("Error in formatting message:", message["content"])
-                    input_messages.append(
-                        {"role": message["role"], "content": message["content"]}
-                    )
-            messages = input_messages
-            while times_tried <= self.retries:
-                try:
-                    # strip whitespace added by yaml load
-                    messages = [
-                        {
-                            "role": message["role"],
-                            "content": message["content"].strip(),
-                        }
-                        for message in messages
-                    ]
-                    response, timeout = await self.engine_wrapper.submit_chat(
-                        messages, self.sampling_params
-                    )
+        while times_tried <= self.retries:
+            try:
+                # strip whitespace added by yaml load
+                messages = [
+                    {
+                        "role": message["role"],
+                        "content": message["content"].strip(),
+                    }
+                    for message in messages
+                ]
+                response, timeout = await self.engine_wrapper.submit_chat(
+                    messages, self.sampling_params
+                )
 
-                    # Modify the parsing logic here
-                    # Split the response by newlines and create a list of dictionaries
-                    conversation_sharegpt = []
-                    lines = response.split("\n")
-                    for line in lines:
-                        if line.startswith("Human:") or line.startswith("AI:"):
-                            speaker, message = line.split(":", 1)
-                            conversation_sharegpt.append({
-                                "from": speaker.strip(),
-                                "value": message.strip()
-                            })
+                # Modify the parsing logic here
+                # Split the response by newlines and create a list of dictionaries
+                conversation_sharegpt = []
+                lines = response.split("\n")
+                for line in lines:
+                    if line.startswith("Human:") or line.startswith("AI:"):
+                        speaker, message = line.split(":", 1)
+                        conversation_sharegpt.append({
+                            "from": speaker.strip(),
+                            "value": message.strip()
+                        })
 
-                    ret = self.output_processor(conversation_sharegpt)
-                    if self.return_input_too:
-                        return ret, yaml.dump(
-                            messages
-                            + [
-                                {
-                                    "role": "assistant",
-                                    "content": response,
-                                    "timeout": timeout,
-                                }
-                            ],
-                            default_flow_style=False,
-                        )
-                    return ret
-                except Exception as e:
-                    logging.error(f"Error in Generation Step: {e}")
-                    traceback.print_exc()
-                    times_tried += 1
-            raise Exception("Generation step failed -- too many retries!")
+                ret = self.output_processor(conversation_sharegpt)
+                if self.return_input_too:
+                    return ret, yaml.dump(
+                        messages
+                        + [
+                            {
+                                "role": "assistant",
+                                "content": response,
+                                "timeout": timeout,
+                            }
+                        ],
+                        default_flow_style=False,
+                    )
+                return ret
+            except Exception as e:
+                logging.error(f"Error in Generation Step: {e}")
+                traceback.print_exc()
+                times_tried += 1
+        raise Exception("Generation step failed -- too many retries!")

@@ -11,34 +11,10 @@ with open("./config.yaml", "r") as file:
 
 OUTPUT_FOLDER = obj_conf["PATH"]["OUTPUT"]
 DEFAULT_EXPERIENCE_PATH = obj_conf["PATH"]["DEFAULT_EXPERIENCES"]
-COMPLETION_MODE = obj_conf["SYSTEM"]["COMPLETION_MODE"]
-LOGICAL_MODEL_A = obj_conf["API"]["LOGICAL_MODEL_A"]
-LOGICAL_MODEL_B = obj_conf["API"]["LOGICAL_MODEL_B"]
-API_KEY_A = obj_conf["API"]["API_KEY_A"]
-API_KEY_B = obj_conf["API"]["API_KEY_B"]
-BASE_URL_A = obj_conf["API"]["BASE_URL_A"]
-BASE_URL_B = obj_conf["API"]["BASE_URL_B"]
-MODE = obj_conf["SYSTEM"]["MODE"]
 CONCURRENCY_LIMIT = obj_conf["SYSTEM"]["CONCURRENCY_LIMIT"]
-
-engine_wrapper = EngineWrapper(
-    model=LOGICAL_MODEL_A,
-    api_key=API_KEY_A,
-    base_url=BASE_URL_A,
-    mode=MODE,
-)
-
-engine_wrapper_large = EngineWrapper(
-    model=LOGICAL_MODEL_B,
-    api_key=API_KEY_B,
-    base_url=BASE_URL_B,
-    mode=MODE,
-)
-
 
 def make_id():
     return str(uuid.uuid4())
-
 
 def write_output_to_file(output, directory, uuid):
     if not os.path.exists(directory):
@@ -50,7 +26,6 @@ def write_output_to_file(output, directory, uuid):
         file.write(output)
 
     print(f"Output written to {file_path}")
-
 
 def parse_conversation_to_sharegpt_format(conversation):
     if isinstance(conversation, dict):
@@ -87,12 +62,7 @@ def parse_conversation_to_sharegpt_format(conversation):
                 "from": "human" if message["speaker"].lower() == "human" else "gpt",
                 "value": message["message"],
             }
-            for message in conversation_data["dialogue"]
+            for message in conversation_data
         ]
     
     return sharegpt_conversation
-
-
-def parse_convo_messages(convo):
-    print("==================================")
-    return (convo, False)

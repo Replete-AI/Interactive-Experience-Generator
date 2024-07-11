@@ -1,5 +1,2 @@
 apify_client
 openai
-cohere
-together
-faker

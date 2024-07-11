@@ -7,15 +7,6 @@ from tqdm import tqdm
 
 from gen_engine_core.generation_functions.engine_wrapper_class import EngineWrapper
 from gen_engine_core.control_flow_functions.control_flow_functions import (
-    LOGICAL_MODEL_A,
-    LOGICAL_MODEL_B,
-    API_KEY_A,
-    API_KEY_B,
-    BASE_URL_A,
-    BASE_URL_B,
-    MODE,
-    CONCURRENCY_LIMIT,
-    write_output_to_file,
     make_id,
     parse_conversation_to_sharegpt_format,
 )
@@ -26,12 +17,13 @@ with open("./config.yaml", "r") as file:
 OUTPUT_DIR = obj_conf["PATH"]["OUTPUT"]
 EXPERIENCES_DIR = obj_conf["PATH"]["EXPERIENCES"]
 
-semaphore = asyncio.Semaphore(CONCURRENCY_LIMIT)
+semaphore = asyncio.Semaphore(obj_conf["SYSTEM"]["CONCURRENCY_LIMIT"])
 
 
 async def run_task_with_limit(task):
     async with semaphore:
         return await task
+
 
 def load_experience_files():
     experience_files = []
@@ -48,7 +40,7 @@ def load_experience_files():
 
 
 def create_reformat_prompt(generated_conversation):
-    reformat_prompt = f"""You are an AI model that creates data in perfect JSONL format. The following is a row from a JSONL file: {generated_conversation} Your task is to reformat this content into a single, perfect line of JSONL without altering the interaction content. Do not use newlines or indentations. Reformat the interaction to match this JSONL structure: {{\"conversations\":[{{\"from\":\"human\",\"value\":\"...\"}},{{\"from\":\"gpt\",\"value\":\"...\"}},{{\"from\":\"human\",\"value\":\"...\"}},{{\"from\":\"gpt\",\"value\":\"...\"}},{{\"from\":\"human\",\"value\":\"...\"}},{{\"from\":\"gpt\",\"value\":\"...\"}}]}} Maintain the exact number and order of turns from the original interaction. Do not add or remove any content. Ensure all quotation marks and special characters are properly escaped. Provide only the reformatted JSONL output without any additional text or explanations."""
+    reformat_prompt = f"""Please reformat the following conversation: {generated_conversation} Take this exact conversation and reformat it so that it's in one perfect JSON line, without any space or indentations, just like this: {{"conversations": [{{"from": "human", "value": "..."}}, {{"from": "gpt", "value": "..."}}, {{"from": "human", "value": "..."}}, {{"from": "gpt", "value": "..."}}, {{"from": "human", "value": "..."}}, {{"from": "gpt", "value": "..."}}]}}"""
     return reformat_prompt
 
 
@@ -78,7 +70,8 @@ def is_valid_sharegpt_format(conversation_json):
     print("Conversation is in valid ShareGPT format.")
     return True
 
-async def generate_conv(experience, output_file, engine_wrapper):
+
+async def generate_conv(experience, output_file, engine_wrapper, pbar):
     id = make_id()
 
     # Unpack the experience tuple
@@ -87,39 +80,27 @@ async def generate_conv(experience, output_file, engine_wrapper):
     # Format the dialogue as a string
     dialogue_str = "\n".join([f"{turn['speaker']}: {turn['message']}" for turn in dialogue])
 
-    prompt = f"""Create a new, unique interaction inspired by the following description and initial interaction:
+    prompt = f"""Given the following scenario and initial dialogue:
 
-description: {description}
+Description: {description}
 
-initial interaction:
+Initial dialogue:
 {dialogue_str}
 
-As Pneuma, craft an expressive and detailed new scenario exploring similar themes and topics, but without copying any part of the initial interaction directly. Introduce novel ideas, hypothetical scenarios, or unexpected twists to create a fresh experience. Describe the setting, actions, and emotions vividly, expressing a full range of human-like thoughts and feelings.
-
-When describing actions, events, or feelings, wrap them in asterisks (*) to differentiate them from dialogue. For example: \"*Action, event, or feeling* Dialogue\"
-
-Format the interaction as a JSONL object with 'conversations' as the key, containing an array of turn objects. Each turn should have 'from' (either 'human' or 'gpt') and 'value' keys. The interaction should be extensive, exploring the scenario fully.
-
-Do not append character names to the start of the dialogue.
-
-IMPORTANT: Do not use the example format provided below. Instead, generate a completely new, unique interaction based on the description and initial interaction given above.
-
-Example format (DO NOT USE):
-{{\"conversations\":[{{\"from\":\"human\",\"value\":\"Human statement or action\"}},{{\"from\":\"gpt\",\"value\":\"Pneuma's response or action\"}}]}}
-Generate a completely novel interaction from start to finish, using the initial dialogue as inspiration but without copying it directly. The interaction should be extensive and explore the scenario fully, with a clear beginning, middle, and end.
+Generate a highly diverse, different, and unique conversation based on the provided scenario and dialogue. Do not generate multiple choice questions. Make sure to provide a lengthy and detailed explanation for the answer. Carefully lay out each step to solving the problem before answering the question. Keep the entire JSON object on a single line without any line breaks or indentation:
+{{"conversations":[{{"from":"human","value":"..."}},{{"from":"gpt","value":"..."}}]}}
+Do not rephrase the question, generate an entirely new question and response of the same theme.
 Conversation:"""
 
-
-# Generate new conversation using the model
+    # Generate new conversation using the model
     generated_conversation_tuple = await engine_wrapper.submit_chat(
-        messages=[{"role": "system", "content": prompt}],
+        messages=[{"role": "user", "content": prompt}],
         sampling_params={
-            "max_tokens": 8192,
-            "temperature": 1.1,  # Slightly reduced from 0.9 to balance creativity and coherence
-            "top_p": 0.92,  # Slightly increased from 0.9
-            "frequency_penalty": 0.6,  # Added frequency penalty
-            "presence_penalty": 0.6,  # Added presence penalty
+            "max_tokens": 2048,
+            "temperature": 1.0,
+            "top_p": 0.9,
             "stop": None,
+            "stream": True,
         },
     )
 
@@ -155,12 +136,13 @@ Conversation:"""
 
         reformat_prompt = create_reformat_prompt(generated_conversation)
         reformatted_conversation_tuple = await engine_wrapper.submit_chat(
-            messages=[{"role": "system", "content": reformat_prompt}],
+            messages=[{"role": "user", "content": reformat_prompt}],
             sampling_params={
-                "max_tokens": 8192,
-                "temperature": 1.0,
-                "top_p": 0.9,
-                "stop": None,
+            "max_tokens": 2048,
+            "temperature": 1.0,
+            "top_p": 0.9,
+            "stop": None,
+            "stream": True,
             },
         )
         generated_conversation = reformatted_conversation_tuple[0]
@@ -189,9 +171,6 @@ Conversation:"""
         "not capable of feeling",
         "not equipped with the capability",
         "do not have the capacity",
-        "symphony",
-        "tapestry",
-        "treasure trove",
         "beyond my capabilities"
     ]
 
@@ -210,6 +189,7 @@ Conversation:"""
 
     with open(output_file, "a") as f:
         f.write(json.dumps({"conversations": conversation_sharegpt}) + "\n")
+        pbar.update(1)
 
 
 async def main():
@@ -217,30 +197,27 @@ async def main():
     output_file = "generated_conversations.jsonl"
 
     engine_wrapper = EngineWrapper(
-        model=LOGICAL_MODEL_A,
-        api_key=API_KEY_A,
-        base_url=BASE_URL_A,
-        mode=MODE,
+        model=obj_conf["API"]["NVIDIA_MODEL"],
+        api_key=obj_conf["API"]["NVIDIA_API_KEY"],
+        base_url=obj_conf["API"]["NVIDIA_BASE_URL"],
     )
 
     experience_files = load_experience_files()
     total_generations = sum(generations for _, _, generations in experience_files)
     print(f"Total conversations to generate: {total_generations}")
 
-    tasks = []
-    for description, dialogue, generations in experience_files:
-        for _ in range(generations):
-            task = asyncio.create_task(
-                run_task_with_limit(
-                    generate_conv((description, dialogue, generations), output_file, engine_wrapper)
-                )
-            )
-            tasks.append(task)
-
     with tqdm(total=total_generations, unit="conversation") as pbar:
-        for task in asyncio.as_completed(tasks):
-            await task
-            pbar.update(1)
+        tasks = []
+        for description, dialogue, generations in experience_files:
+            for _ in range(generations):
+                task = asyncio.create_task(
+                    run_task_with_limit(
+                        generate_conv((description, dialogue, generations), output_file, engine_wrapper, pbar)
+                    )
+                )
+                tasks.append(task)
+
+        await asyncio.gather(*tasks)
 
 
 asyncio.run(main())

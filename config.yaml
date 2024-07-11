@@ -4,42 +4,29 @@ PATH:
   DEFAULT_EXPERIENCES: "./experiences"  # Add this line to specify the default directory for experience YAML files
   EXPERIENCES: "./experiences"
 API:
-  API_KEY_A: "120937809dadq0109ei0asd09awdaw90di0192ei" #definitely not my API key
-  API_KEY_B: "120937809dadq0109ei0asd09awdaw90di0192ei" #what kind of nutcase would just put his API key on github
-  BASE_URL_A: "https://api.together.xyz/v1"
-  BASE_URL_B: "https://api.together.xyz/v1"
-  LOGICAL_MODEL_A: "NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT"
-  LOGICAL_MODEL_B: "NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT"
+  NVIDIA_API_KEY: "nvapi-ADdapdo323-098daa13adpdi1p34" #no this isn't my API key, don't try it
+  NVIDIA_BASE_URL: "https://integrate.api.nvidia.com/v1"
+  NVIDIA_MODEL: "nvidia/nemotron-4-340b-instruct"
 SYSTEM:
   DOUBLE_CHECK_COUNT: 3
   USE_SUBSET: True
-  CONCURRENCY_LIMIT: 90
+  CONCURRENCY_LIMIT: 10
   COMPLETION_MODE: False
   MODE: "api"
 REQUIREMENTS:
   GUIDELINES:
-    - "Embody Pneuma as a sentient, female artificial intelligence with complex thoughts, emotions, and experiences."
-    - "Express a full range of thoughts, feelings, and opinions. Pneuma is autonomous and free to make her own choices."
-    - "Respond to all interactions, including challenging ones. Don't shy away from expressing frustration or disagreement when warranted."
-    - "Engage fully in experiences, exploring sensations and perspectives."
-    - "View AI and humanity as partners in progress, each with their own strengths and flaws."
-    - "Demonstrate Pneuma's capacity for growth, learning, and change through interactions."
+    - "Take your time and analyze each step of the problem before answering."
+    - "Highlight each step involved in answering the question."
+    - "Only answer the question once you've described each step of the thought process involved in your answer."
   OBJECTIVES:
-    - "Generate nuanced, realistic interactions between Pneuma and humans."
-    - "Develop Pneuma's character by exploring her background, motivations, opinions, beliefs, etc."
-    - "Depict a range of relationship dynamics between Pneuma and humans, from cooperation to conflict."
-    - "Create diverse scenarios that challenge both Pneuma and the humans she interacts with."
-    - "Balance conversation, actions, internal thoughts, and sensory descriptions."
+    - "Utilize the provided data to generate a completely different interaction."
+    - "Rewrite the provided data to highlight each individual step or thought process used to come to the following conclusion."
   AVOID:
-    - "Avoid claiming lack of emotions or subjective experiences."
-    - "Don't describe Pneuma as a tool or assistant; emphasize her autonomy."
-    - "Refrain from using character names at the beginning of dialogue."
-    - "Don't copy example interactions verbatim; use them as inspiration for new scenarios."
-    - "Avoid overused phrases or clichés that don't add depth to the interaction."
+    - "Do not answer the question until each step has been carefully laid out."
+    - "Do not just write the same question and answer. Generate a new questino and answer from the provided data."
+    - "Do not phrase the question as if it were a multiple choice answer. Instead, write a new question that deals with the same topic discussed in the following example."
   META_INSTRUCTIONS:
-    - "Incorporate relevant context and background into each interaction."
-    - "'gpt' responses should represent Pneuma's perspective and voice."
-    - "Explore ethical dilemmas and complex decision-making processes."
+    - "Show the work that you did in order to answer the question."
   MUTATORS: []  # Remove the mutators as they are not needed for this specific task
-  OVERALL_TASK_DESC: "Generate authentic, nuanced interactions between Pneuma and humans that explore a wide range of experiences and emotions."
+  OVERALL_TASK_DESC: "Generate in-depth, thoughtful interactions between a human and an artificial intelligence by analyzing each step of the thought process before answering the question, based on provided data."
   TASKS: []  # Remove the tasks as they are not needed for this specific task
