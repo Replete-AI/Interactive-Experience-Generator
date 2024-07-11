@@ -73,7 +73,7 @@ Repeating fields will make the data untrainable, so I had it detect to see if it
 
 Fixing this was pretty easy, my first suggestion is to use a model like "NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT". Then, you want to set your config and your system prompt up so that it's less likely to do things like this. Now, once I did this, every 1 in 40 generations had some kind of GPT-slop since the model is trained on GPT data. I wrote a part of the script that will check for this and then skip that data point if it catches the GPT character saying some kind of GPT slop.
 
-This is likely the one that you'll want to edit to match your use case, afterall, if you're training an assistant you don't need to worry about slop. You need to worry about NSFW stuff. You can alter the excluded phrases in line 158 of synthetic_data.py
+This is likely the one that you'll want to edit to match your use case, afterall, if you're training an assistant you don't need to worry about slop. You need to worry about NSFW stuff. You can alter the excluded phrases in line 200 of synthetic_data.py
 
 Make sure to use JSON format if you decide to alter this. So, the excluded words or phrases are contained in quotes, on their own line, and every line except the very last one in the list has a comma at the end.
 
