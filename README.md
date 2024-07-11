@@ -5,6 +5,7 @@
 ## ~ modified to generate data with Nemotron through the Nvidia API! (it's free!)
 
 ### <span style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 6em;"><b>This is a complex data pipeline which was inspired by the work of [Evan Armstrong](https://github.com/e-p-armstrong), the creator of [augmentoolkit](https://github.com/e-p-armstrong/augmentoolkit). </b></span>
+</div>
 
 ## Install the Repository and its Requirements
 
