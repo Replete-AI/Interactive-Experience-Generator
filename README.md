@@ -27,7 +27,7 @@ Speaking of experience archetypes, these can be found in the experiences folder 
 
 Then, I open a terminal in VSC, or any other IDE to be honest, and I type `python synthetic_data.py` to run the script. It injects the prompts in the config, then wraps the system prompt around the experience data. It then, using the prompts, tries to generate an experience that is similar to the data it was given, along with using the generation parameters I had set in line 83 of synthetic_data.py
 
-After some testing and tweaking of the config, system prompt, and experiences, I had 5 incredibly different and high quality interactions generated that matched my desired outcome. This basically tells me that everything is set for me to start making as many experience files as I need. In this case, I needed thousands of them. I then created a "finished experiences" folder for me to stick my completed archetypes into so that I had a way to isolate the ones that I had already tested from being used by the script.
+After some testing and tweaking of the config, system prompt, and experiences, I had 5 incredibly different and high quality interactions generated that matched my desired outcome. This basically tells me that everything is set for me to start making as many experience files as I need. In this case, I needed thousands of them. I then created a "finished experiences" folder for me to stick my completed archetypes into so that I had a way to isolate the ones that I had already tested from the ones that I hadn't tested yet.
 
 ## Creating More Experience Data
 
