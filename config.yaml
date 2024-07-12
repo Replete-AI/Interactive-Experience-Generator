@@ -22,11 +22,10 @@ API:
   LOGICAL_MODEL_A: "${LOGICAL_MODEL_A:-NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT}"
   LOGICAL_MODEL_B: "${LOGICAL_MODEL_B:-NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT}"
 SYSTEM:
-  # For numeric values, we need to ensure they're converted to the correct type
-  DOUBLE_CHECK_COUNT: ${{ int(env('DOUBLE_CHECK_COUNT', 3)) }}
-  USE_SUBSET: ${{ str(env('USE_SUBSET', 'True')).lower() == 'true' }}
-  CONCURRENCY_LIMIT: ${{ int(env('CONCURRENCY_LIMIT', 90)) }}
-  COMPLETION_MODE: ${{ str(env('COMPLETION_MODE', 'False')).lower() == 'true' }}
+  DOUBLE_CHECK_COUNT: ${DOUBLE_CHECK_COUNT:-3}
+  USE_SUBSET: ${USE_SUBSET:-True}
+  CONCURRENCY_LIMIT: ${CONCURRENCY_LIMIT:-90}
+  COMPLETION_MODE: ${COMPLETION_MODE:-False}
   MODE: "${MODE:-api}"
 REQUIREMENTS:
   GUIDELINES:
