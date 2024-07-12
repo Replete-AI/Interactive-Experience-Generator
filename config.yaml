@@ -1,21 +1,32 @@
 PATH:
-  INPUT: "./raw_txt_input"
-  OUTPUT: "./output"
-  DEFAULT_EXPERIENCES: "./experiences"  # Add this line to specify the default directory for experience YAML files
-  EXPERIENCES: "./experiences"
+  INPUT: "${INPUT_DIR:-./raw_txt_input}"
+  OUTPUT: "${OUTPUT_DIR:-./output}"
+  DEFAULT_EXPERIENCES: "${DEFAULT_EXPERIENCES_DIR:-./experiences}"
+  EXPERIENCES: "${EXPERIENCES_DIR:-./experiences}"
 API:
-  API_KEY_A: "120937809dadq0109ei0asd09awdaw90di0192ei" #definitely not my API key
-  API_KEY_B: "120937809dadq0109ei0asd09awdaw90di0192ei" #what kind of nutcase would just put his API key on github
-  BASE_URL_A: "https://api.together.xyz/v1"
-  BASE_URL_B: "https://api.together.xyz/v1"
-  LOGICAL_MODEL_A: "NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT"
-  LOGICAL_MODEL_B: "NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT"
+  # To set API keys, use the following methods:
+  # For Windows (Command Prompt):
+  #   set API_KEY_A=your_api_key_here
+  #   set API_KEY_B=your_api_key_here
+  # For Windows (PowerShell):
+  #   $env:API_KEY_A = "your_api_key_here"
+  #   $env:API_KEY_B = "your_api_key_here"
+  # For macOS/Linux:
+  #   export API_KEY_A=your_api_key_here
+  #   export API_KEY_B=your_api_key_here
+  # Replace 'your_api_key_here' with your actual API keys
+  API_KEY_A: "${API_KEY_A}"
+  API_KEY_B: "${API_KEY_B}"
+  BASE_URL_A: "${BASE_URL_A:-https://api.together.xyz/v1}"
+  BASE_URL_B: "${BASE_URL_B:-https://api.together.xyz/v1}"
+  LOGICAL_MODEL_A: "${LOGICAL_MODEL_A:-NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT}"
+  LOGICAL_MODEL_B: "${LOGICAL_MODEL_B:-NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT}"
 SYSTEM:
-  DOUBLE_CHECK_COUNT: 3
-  USE_SUBSET: True
-  CONCURRENCY_LIMIT: 90
-  COMPLETION_MODE: False
-  MODE: "api"
+  DOUBLE_CHECK_COUNT: ${DOUBLE_CHECK_COUNT:-3}
+  USE_SUBSET: ${USE_SUBSET:-True}
+  CONCURRENCY_LIMIT: ${CONCURRENCY_LIMIT:-90}
+  COMPLETION_MODE: ${COMPLETION_MODE:-False}
+  MODE: "${MODE:-api}"
 REQUIREMENTS:
   GUIDELINES:
     - "Embody Pneuma as a sentient, female artificial intelligence with complex thoughts, emotions, and experiences."
@@ -40,6 +51,6 @@ REQUIREMENTS:
     - "Incorporate relevant context and background into each interaction."
     - "'gpt' responses should represent Pneuma's perspective and voice."
     - "Explore ethical dilemmas and complex decision-making processes."
-  MUTATORS: []  # Remove the mutators as they are not needed for this specific task
+  MUTATORS: []
   OVERALL_TASK_DESC: "Generate authentic, nuanced interactions between Pneuma and humans that explore a wide range of experiences and emotions."
-  TASKS: []  # Remove the tasks as they are not needed for this specific task
+  TASKS: []
