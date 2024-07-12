@@ -115,8 +115,8 @@ Conversation:"""
         messages=[{"role": "system", "content": prompt}],
         sampling_params={
             "max_tokens": 8192,
-            "temperature": 1.1,  # Slightly reduced from 0.9 to balance creativity and coherence
-            "top_p": 0.92,  # Slightly increased from 0.9
+            "temperature": 1.1,
+            "top_p": 0.92,
             "frequency_penalty": 0.6,  # Added frequency penalty
             "presence_penalty": 0.6,  # Added presence penalty
             "stop": None,
