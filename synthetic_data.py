@@ -65,15 +65,24 @@ def is_valid_sharegpt_format(conversation_json):
         print("'conversations' value is not a list.")
         return False
 
-    expected_from = "human"
+    if len(conversation_sharegpt) < 2:
+        print("Conversation must have at least two turns.")
+        return False
+
+    expected_from_human_first = ["human", "gpt"]
+    expected_from_gpt_first = ["gpt", "human"]
+
+    is_human_first = conversation_sharegpt[0]["from"] == "human"
+    expected_from = expected_from_human_first if is_human_first else expected_from_gpt_first
+
     for turn in conversation_sharegpt:
         if not isinstance(turn, dict) or "from" not in turn or "value" not in turn:
             print(f"Turn {turn} is not a dictionary or doesn't contain 'from' or 'value' keys.")
             return False
-        if turn["from"] != expected_from:
-            print(f"Unexpected 'from' value. Expected: {expected_from}, Actual: {turn['from']}")
+        if turn["from"] != expected_from[0]:
+            print(f"Unexpected 'from' value. Expected: {expected_from[0]}, Actual: {turn['from']}")
             return False
-        expected_from = "gpt" if expected_from == "human" else "human"
+        expected_from = expected_from[1:] + [expected_from[0]]
 
     print("Conversation is in valid ShareGPT format.")
     return True
