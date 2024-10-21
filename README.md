@@ -6,7 +6,7 @@
 
 ### <span style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 6em;"><b>This is a complex data pipeline which was inspired by the work of [Evan Armstrong](https://github.com/e-p-armstrong), the creator of [augmentoolkit](https://github.com/e-p-armstrong/augmentoolkit). </b></span>
 
-I ended up using this pipeline to create [Pneuma](https://huggingface.co/Replete-AI/Pneuma), which is a series of models that have been trained on data representing experiences and interactions from the perspective of an AI character. With this pipeline, I was able to give an LLM a name, a personality, and the ability to generate realistic humanlike interactions.
+I ended up using this pipeline to create [Pneuma](https://huggingface.co/Replete-AI/L3-Pneuma-8B), which is a series of models that have been trained on data representing experiences and interactions from the perspective of an AI character. With this pipeline, I was able to give an LLM a name, a personality, and the ability to generate realistic humanlike interactions.
 </div>
 
 ## Install the Repository and its Requirements
